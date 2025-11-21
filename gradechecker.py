@@ -71,7 +71,6 @@ def edit_subject():
 
     new_subject = input("Enter new subject name: ").strip()
 
-    # Update grade keys
     for s in grades:
         if subject in grades[s]:
             grades[s][new_subject] = grades[s].pop(subject)
@@ -259,10 +258,8 @@ def grade_menu():
         print("1. Add (pick subject)")
         print("2. Edit (pick subject)")
         print("3. Delete (pick subject)")
-        print("4. View")
         print("0. Back")
-
-        choice = input("Select: ").strip()
+        choice = input("Select: ")
 
         if choice == "1":
             add_grade()
@@ -270,13 +267,13 @@ def grade_menu():
             edit_grade()
         elif choice == "3":
             delete_grade()
-        elif choice == "4":
-            view_student_grades()
         elif choice == "0":
             break
         else:
             print("\nInvalid Choice!")
+
         pause()
+
 
 if __name__ == "__main__":
     menu()
