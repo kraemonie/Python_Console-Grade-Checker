@@ -1,167 +1,182 @@
 import sys
 
-# Data storage
-students = {}
-subjects = {}
-grades = {}  # {student_Name: {subject_name: grade}}
+students = {}          # {student_name: student_name}
+subjects = {}          # {subject_name: subject_name}
+grades = {}            # {student_name: {subject_name: grade}}
 
 def pause():
     input("\nPress Enter to continue...")
 
-#studnets
+# STUDENTS
 def add_student():
-#auto generate from 001 to 900 hehe
-    if students:
-        next_Name = max(int(sName) for sName in students.keys()) + 1
-    else:
-        next_Name = 1
-    student_Name = f"{next_Name:03d}" # ion knwow internet tells me to to this for 3 zeroes
-
-
-    name = input("Enter student name: ")
-    students[student_Name] = name
-    print(f"\nStudent added successfully! Assigned Name: {student_Name}!")
-
+    name = input("Enter student name: ").strip() 
+    #strip removes spaces before and after the string bale if ever may nag input ng " felix" for example tapos naread ng program, magiging "felix" na lang siya
+    if name in students:
+        print("\nStudent already exists!")
+        return
+    students[name] = name
+    print(f"\nStudent added successfully: {name}")
 
 def edit_student():
-    student_Name = input("Enter student Name to edit: ")
-    if student_Name not in students:
+    name = input("Enter student name to edit: ").strip()
+    if name not in students:
         print("\nStudent not found!")
         return
-    new_name = input("Enter new name: ")
-    students[student_Name] = new_name
+
+    new_name = input("Enter new name: ").strip()
+
+    if name in grades:
+        grades[new_name] = grades.pop(name)
+
+    students.pop(name)
+    students[new_name] = new_name
+
     print("\nStudent updated!")
 
-
 def delete_student():
-    student_Name = input("Enter student Name to delete: ")
-    if student_Name not in students:
+    name = input("Enter student name to delete: ").strip()
+    if name not in students:
         print("\nStudent not found!")
         return
-    students.pop(student_Name)
-    grades.pop(student_Name, None)
-    print("\nStudent deleted!")
 
+    students.pop(name)
+    grades.pop(name, None)
+
+    print("\nStudent deleted!")
 
 def view_students():
     if not students:
         print("\nNo students available.")
         return
-    print("\n--- STUDENTS LIST ---")
-    for sName, name in students.items():
-        print(f"Name: {sName} | Name: {name}")
 
-#subjeckerz
+    print("\n--- STUDENTS LIST ---")
+    for name in students:
+        print(name)
+
+# SUBJECTS
 def add_subject():
-    subject_name = input("Enter subject Name: ")
-    if subject_name in subjects:
+    subject = input("Enter subject name: ").strip()
+    if subject in subjects:
         print("\nSubject already exists!")
         return
-    subjects[subject_name] = subject_name
+
+    subjects[subject] = subject
     print("\nSubject added!")
 
-
-
 def edit_subject():
-    subject_name = input("Enter subject Name to edit: ")
-    if subject_name not in subjects:
+    subject = input("Enter subject name to edit: ").strip()
+    if subject not in subjects:
         print("\nSubject not found!")
         return
-    new_name = input("Enter new subject name: ")
-    subjects[subject_name] = new_name
+
+    new_subject = input("Enter new subject name: ").strip()
+
+    # Update grade keys
+    for s in grades:
+        if subject in grades[s]:
+            grades[s][new_subject] = grades[s].pop(subject)
+
+    subjects.pop(subject)
+    subjects[new_subject] = new_subject
+
     print("\nSubject updated!")
 
-
 def delete_subject():
-    subject_name = input("Enter subject Name to delete: ")
-    if subject_name not in subjects:
+    subject = input("Enter subject name to delete: ").strip()
+    if subject not in subjects:
         print("\nSubject not found!")
         return
-    subjects.pop(subject_name) #pop is remove ong dont forget to explain to felixz
-    for sName in grades:
-        grades[sName].pop(subject_name, None)
-    print("\nSubject deleted!")
 
+    subjects.pop(subject) #pop is remove ong dont forget to explain to felixz
+
+    for s in grades:
+        grades[s].pop(subject, None)
+
+    print("\nSubject deleted!")
 
 def view_subjects():
     if not subjects:
         print("No subjects available.")
         return
+
     print("\n--- SUBJECTS LIST ---")
     for name in subjects:
-        print(f"{name}")
+        print(name)
 
-#GRades
+# GRADES
 def pick_student():
     if not students:
         print("\nNo students available!")
         return None
     view_students()
-    return input("Enter student Name: ")
-
+    return input("Enter student name: ").strip()
 
 def pick_subject():
     if not subjects:
         print("\nNo subjects available!")
         return None
     view_subjects()
-    return input("Enter subject Name: ")
-
+    return input("Enter subject name: ").strip()
 
 def add_grade():
-    sName = pick_student()
-    if not sName or sName not in students:
+    student = pick_student()
+    if not student or student not in students:
         print("\nInvalid student!")
         return
-    sub = pick_subject()
-    if not sub or sub not in subjects:
+
+    subject = pick_subject()
+    if not subject or subject not in subjects:
         print("\nInvalid subject!")
         return
-    grade = input("Enter grade: ")
-    grades.setdefault(sName, {})[sub] = grade
+
+    grade = input("Enter grade: ").strip()
+    grades.setdefault(student, {})[subject] = grade
     print("\nGrade added!")
 
-
 def edit_grade():
-    sName = pick_student()
-    if not sName or sName not in grades:
+    student = pick_student()
+    if not student or student not in grades:
         print("\nNo grades for this student.")
         return
-    sub = pick_subject()
-    if not sub or sub not in grades[sName]:
+
+    subject = pick_subject()
+    if not subject or subject not in grades[student]:
         print("\nNo grade for this subject.")
         return
-    grade = input("Enter new grade: ")
-    grades[sName][sub] = grade
+
+    grade = input("Enter new grade: ").strip()
+    grades[student][subject] = grade
     print("\nGrade updated!")
 
-
 def delete_grade():
-    sName = pick_student()
-    if not sName or sName not in grades:
+    student = pick_student()
+    if not student or student not in grades:
         print("\nNo grades for this student.")
         return
-    sub = pick_subject()
-    if not sub or sub not in grades[sName]:
+
+    subject = pick_subject()
+    if not subject or subject not in grades[student]:
         print("\nGrade not found.")
         return
-    grades[sName].pop(sub)
+
+    grades[student].pop(subject)
     print("\nGrade deleted!")
 
-
 def view_student_grades():
-    sName = pick_student()
-    if not sName or sName not in students:
+    student = pick_student()
+    if not student or student not in students:
         print("\nInvalid student.")
         return
-    print(f"\nGrades for {students[sName]}:")
-    if sName not in grades or not grades[sName]:
+
+    print(f"\nGrades for {student}:")
+    if student not in grades or not grades[student]:
         print("\nNo grades available.")
         return
-    for sub, g in grades[sName].items():
-        print(f"{subjects.get(sub, 'Unknown')} ({sub}): {g}")
 
-#Main MENU 
+    for subject, g in grades[student].items():
+        print(f"{subject}: {g}")
+
+# MENUS
 def menu():
     while True:
         print("\n===== GRADE CHECKER SYSTEM =====")
@@ -170,7 +185,8 @@ def menu():
         print("3. Input Grades")
         print("4. View Grades")
         print("5. Exit")
-        choice = input("Select an option: ")
+
+        choice = input("Select an option: ").strip()
 
         if choice == "1":
             student_menu()
@@ -187,7 +203,6 @@ def menu():
         else:
             print("Invalid choice!")
 
-
 def student_menu():
     while True:
         print("\n--- MANAGE STUDENTS ---")
@@ -196,16 +211,22 @@ def student_menu():
         print("3. Delete")
         print("4. View")
         print("0. Back")
-        choice = input("Select: ")
 
-        if choice == "1": add_student() 
-        elif choice == "2": edit_student()
-        elif choice == "3": delete_student()
-        elif choice == "4": view_students()
-        elif choice == "0": break
-        else: print("\nInvalid Choice!")
+        choice = input("Select: ").strip()
+
+        if choice == "1":
+            add_student()
+        elif choice == "2":
+            edit_student()
+        elif choice == "3":
+            delete_student()
+        elif choice == "4":
+            view_students()
+        elif choice == "0":
+            break
+        else:
+            print("\nInvalid Choice!")
         pause()
-
 
 def subject_menu():
     while True:
@@ -215,16 +236,22 @@ def subject_menu():
         print("3. Delete")
         print("4. View")
         print("0. Back")
-        choice = input("Select: ")
 
-        if choice == "1": add_subject()
-        elif choice == "2": edit_subject()
-        elif choice == "3": delete_subject()
-        elif choice == "4": view_subjects()
-        elif choice == "0": break
-        else: print("\nInvalid Choice!")
+        choice = input("Select: ").strip()
+
+        if choice == "1":
+            add_subject()
+        elif choice == "2":
+            edit_subject()
+        elif choice == "3":
+            delete_subject()
+        elif choice == "4":
+            view_subjects()
+        elif choice == "0":
+            break
+        else:
+            print("\nInvalid Choice!")
         pause()
-
 
 def grade_menu():
     while True:
@@ -234,14 +261,21 @@ def grade_menu():
         print("3. Delete (pick subject)")
         print("4. View")
         print("0. Back")
-        choice = input("Select: ")
 
-        if choice == "1": add_grade()
-        elif choice == "2": edit_grade()
-        elif choice == "3": delete_grade()
-        elif choice == "4": view_student_grades()
-        elif choice == "0": break
-        else: print("\nInvalid Choice!")
+        choice = input("Select: ").strip()
+
+        if choice == "1":
+            add_grade()
+        elif choice == "2":
+            edit_grade()
+        elif choice == "3":
+            delete_grade()
+        elif choice == "4":
+            view_student_grades()
+        elif choice == "0":
+            break
+        else:
+            print("\nInvalid Choice!")
         pause()
 
 if __name__ == "__main__":
