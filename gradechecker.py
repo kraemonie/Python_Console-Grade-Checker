@@ -71,6 +71,7 @@ def edit_subject():
 
     new_subject = input("Enter new subject name: ").strip()
 
+    # Update grade keys
     for s in grades:
         if subject in grades[s]:
             grades[s][new_subject] = grades[s].pop(subject)
@@ -161,19 +162,25 @@ def delete_grade():
     grades[student].pop(subject)
     print("\nGrade deleted!")
 
-def view_student_grades():
-    student = pick_student()
-    if not student or student not in students:
-        print("\nInvalid student.")
+def view_all_grades():
+    if not students:
+        print("\nNo students available.")
         return
 
-    print(f"\nGrades for {student}:")
-    if student not in grades or not grades[student]:
-        print("\nNo grades available.")
-        return
+    print("\n===== ALL STUDENTS' GRADES =====")
 
-    for subject, g in grades[student].items():
-        print(f"{subject}: {g}")
+    for sName, studentName in students.items():
+        print(f"\n--- {studentName} ---")
+
+        # If the student has no grades
+        if sName not in grades or not grades[sName]:
+            print("  No grades available.")
+            continue
+
+        # Show each subject + grade
+        for sub, g in grades[sName].items():
+            print(f"  {sub}: {g}")
+
 
 # MENUS
 def menu():
@@ -194,7 +201,7 @@ def menu():
         elif choice == "3":
             grade_menu()
         elif choice == "4":
-            view_student_grades()
+            view_all_grades()
             pause()
         elif choice == "5":
             print("\nExiting system...")
